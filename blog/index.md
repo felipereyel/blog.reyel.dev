@@ -1,5 +1,3 @@
-# Homepage
+# Welcome to my blog!
 
-This is my new blog.   
-
-This is its homepage.   
+This is the homepage.

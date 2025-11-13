@@ -113,8 +113,13 @@ func generate() {
 }
 
 func serve() {
-	fs := http.FileServer(http.Dir("dist"))
-	http.Handle("/", fs)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			http.ServeFile(w, r, filepath.Join("dist", "index.html"))
+			return
+		}
+		http.FileServer(http.Dir("dist")).ServeHTTP(w, r)
+	})
 
 	fmt.Println("Serving files from dist/ on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
