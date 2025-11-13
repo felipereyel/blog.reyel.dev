@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -70,7 +69,7 @@ func generate() {
 		// Check for markdown files.
 		if strings.HasSuffix(info.Name(), ".md") {
 			// Read the markdown file.
-			source, err := ioutil.ReadFile(path)
+			source, err := os.ReadFile(path)
 			if err != nil {
 				return err
 			}
