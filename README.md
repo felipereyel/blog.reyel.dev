@@ -33,3 +33,7 @@ To serve the generated HTML files from `dist/` on `http://localhost:8080`:
 ```sh
 go run main.go serve
 ```
+
+## TODO
+
+- Styling
