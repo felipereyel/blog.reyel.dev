@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+</head>
+<body>
+    <div class="container">
+        <main>
+            <h1>Reyel Blog</h1>
+            <p>Welcome to my blog!</p>
+            <p>This is the homepage.</p>
+        </main>
+        <aside>
+            <h2>Posts</h2>
+            <ul>
+                {{range .Posts}}
+                <li><a href="{{.Link}}">{{.Date.Format "2006-01-02"}} - {{.Title}}</a></li>
+                {{end}}
+            </ul>
+        </aside>
+    </div>
+</body>
+</html>

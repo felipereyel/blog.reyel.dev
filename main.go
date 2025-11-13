@@ -9,13 +9,28 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"github.com/yuin/goldmark"
 )
 
 type Page struct {
 	Title   string
 	Content template.HTML
+}
+
+type Post struct {
+	Title string
+	Date  time.Time
+	Slug  string
+	Link  string
+}
+
+type IndexPage struct {
+	Title string
+	Posts []Post
 }
 
 func main() {
@@ -48,68 +63,128 @@ func generate() {
 	if _, err := os.Stat("dist"); os.IsNotExist(err) {
 		os.Mkdir("dist", 0755)
 	}
+	if _, err := os.Stat("dist/posts"); os.IsNotExist(err) {
+		os.Mkdir("dist/posts", 0755)
+	}
 
-	// Parse the template.
-	tmpl, err := template.ParseFiles("templates/layout.html")
+	// Parse the templates.
+	postTmpl, err := template.ParseFiles("templates/post.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	indexTmpl, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Walk through the blog directory.
+	var posts []Post
+	var markdownFiles []string
+
+	// First walk: collect all markdown files
 	err = filepath.Walk("blog", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-
-		// Skip directories.
-		if info.IsDir() {
-			return nil
+		if !info.IsDir() && strings.HasSuffix(info.Name(), ".md") {
+			markdownFiles = append(markdownFiles, path)
 		}
-
-		// Check for markdown files.
-		if strings.HasSuffix(info.Name(), ".md") {
-			// Read the markdown file.
-			source, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-
-			// Convert markdown to html.
-			var content bytes.Buffer
-			if err := goldmark.Convert(source, &content); err != nil {
-				return err
-			}
-
-			// Create the new html file in the dist directory.
-			destPath := filepath.Join("dist", strings.TrimSuffix(info.Name(), ".md")+".html")
-			destFile, err := os.Create(destPath)
-			if err != nil {
-				return err
-			}
-			defer destFile.Close()
-
-			// Create the data for the template.
-			title := strings.Title(strings.ReplaceAll(strings.TrimSuffix(info.Name(), ".md"), "-", " "))
-			page := Page{
-				Title:   title,
-				Content: template.HTML(content.String()),
-			}
-
-			// Execute the template with the data.
-			err = tmpl.Execute(destFile, page)
-			if err != nil {
-				return err
-			}
-
-			fmt.Printf("Converted %s to %s\n", path, destPath)
-		}
-
 		return nil
 	})
-
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Initialize the title caser
+	caser := cases.Title(language.Und, cases.NoLower)
+
+	// Process all markdown files
+	for _, path := range markdownFiles {
+		info, _ := os.Stat(path)
+		if info.Name() == "index.md" { // index.md is no longer processed as a separate file
+			continue
+		}
+
+		// Read the markdown file.
+		source, err := os.ReadFile(path)
+		if err != nil {
+			log.Printf("Error reading %s: %v", path, err)
+			continue
+		}
+
+		// Convert markdown to html.
+		var content bytes.Buffer
+		if err := goldmark.Convert(source, &content); err != nil {
+			log.Printf("Error converting %s: %v", path, err)
+			continue
+		}
+
+		var destPath string
+		if strings.HasPrefix(path, "blog/posts/") {
+			destPath = filepath.Join("dist/posts", strings.TrimSuffix(info.Name(), ".md")+".html")
+		} else {
+			destPath = filepath.Join("dist", strings.TrimSuffix(info.Name(), ".md")+".html")
+		}
+
+		destFile, err := os.Create(destPath)
+		if err != nil {
+			log.Printf("Error creating %s: %v", destPath, err)
+			continue
+		}
+		defer destFile.Close()
+
+		// Create the data for the template.
+		title := caser.String(strings.ReplaceAll(strings.TrimSuffix(info.Name(), ".md"), "-", " "))
+		page := Page{
+			Title:   title,
+			Content: template.HTML(content.String()),
+		}
+
+		// Execute the template with the data.
+		err = postTmpl.Execute(destFile, page)
+		if err != nil {
+			log.Printf("Error executing template for %s: %v", destPath, err)
+			continue
+		}
+
+		fmt.Printf("Converted %s to %s\n", path, destPath)
+
+		if strings.HasPrefix(path, "blog/posts/") {
+			parts := strings.SplitN(info.Name(), "-", 4)
+			if len(parts) == 4 {
+				dateStr := strings.Join(parts[:3], "-")
+				date, err := time.Parse("2006-01-02", dateStr)
+				if err == nil {
+					slug := strings.TrimSuffix(parts[3], ".md")
+					posts = append(posts, Post{
+						Title: caser.String(strings.ReplaceAll(slug, "-", " ")),
+						Date:  date,
+						Slug:  slug,
+						Link:  "/" + filepath.Join("posts", strings.TrimSuffix(info.Name(), ".md")+".html"),
+					})
+				}
+			}
+		}
+	}
+
+	// Generate index.html
+	destPath := filepath.Join("dist", "index.html")
+	destFile, err := os.Create(destPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer destFile.Close()
+
+	title := "Home"
+	page := IndexPage{
+		Title: title,
+		Posts: posts,
+	}
+
+	err = indexTmpl.Execute(destFile, page)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Generated %s\n", destPath)
 }
 
 func serve() {

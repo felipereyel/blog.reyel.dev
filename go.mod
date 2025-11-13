@@ -2,4 +2,7 @@ module blog.reyel.dev
 
 go 1.25.4
 
-require github.com/yuin/goldmark v1.7.13
+require (
+	github.com/yuin/goldmark v1.7.13
+	golang.org/x/text v0.31.0
+)
