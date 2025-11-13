@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,6 +13,11 @@ import (
 
 	"github.com/yuin/goldmark"
 )
+
+type Page struct {
+	Title   string
+	Content template.HTML
+}
 
 func main() {
 	if len(os.Args) < 2 {
@@ -44,8 +50,14 @@ func generate() {
 		os.Mkdir("dist", 0755)
 	}
 
+	// Parse the template.
+	tmpl, err := template.ParseFiles("templates/layout.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Walk through the blog directory.
-	err := filepath.Walk("blog", func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk("blog", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -64,14 +76,28 @@ func generate() {
 			}
 
 			// Convert markdown to html.
-			var buf bytes.Buffer
-			if err := goldmark.Convert(source, &buf); err != nil {
+			var content bytes.Buffer
+			if err := goldmark.Convert(source, &content); err != nil {
 				return err
 			}
 
 			// Create the new html file in the dist directory.
-			destPath := filepath.Join("dist", strings.TrimSuffix(info.Name(), ".md")+ ".html")
-			err = ioutil.WriteFile(destPath, buf.Bytes(), 0644)
+			destPath := filepath.Join("dist", strings.TrimSuffix(info.Name(), ".md")+".html")
+			destFile, err := os.Create(destPath)
+			if err != nil {
+				return err
+			}
+			defer destFile.Close()
+
+			// Create the data for the template.
+			title := strings.Title(strings.ReplaceAll(strings.TrimSuffix(info.Name(), ".md"), "-", " "))
+			page := Page{
+				Title:   title,
+				Content: template.HTML(content.String()),
+			}
+
+			// Execute the template with the data.
+			err = tmpl.Execute(destFile, page)
 			if err != nil {
 				return err
 			}
