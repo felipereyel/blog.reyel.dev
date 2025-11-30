@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -96,6 +97,13 @@ func generate() {
 
 	// Initialize the title caser
 	caser := cases.Title(language.Und, cases.NoLower)
+
+	// sort markdownFiles for newer posts first
+	sort.Slice(markdownFiles, func(i, j int) bool {
+		infoI, _ := os.Stat(markdownFiles[i])
+		infoJ, _ := os.Stat(markdownFiles[j])
+		return infoI.ModTime().After(infoJ.ModTime())
+	})
 
 	// Process all markdown files
 	for _, path := range markdownFiles {
