@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/yuin/goldmark"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"github.com/yuin/goldmark"
 )
 
 type Page struct {
@@ -133,7 +133,16 @@ func generate() {
 		defer destFile.Close()
 
 		// Create the data for the template.
-		title := caser.String(strings.ReplaceAll(strings.TrimSuffix(info.Name(), ".md"), "-", " "))
+		var title string
+		if strings.HasPrefix(path, "blog/posts/") {
+			parts := strings.SplitN(info.Name(), "-", 4)
+			if len(parts) == 4 {
+				slug := strings.TrimSuffix(parts[3], ".md")
+				title = caser.String(strings.ReplaceAll(slug, "-", " "))
+			}
+		} else {
+			title = caser.String(strings.ReplaceAll(strings.TrimSuffix(info.Name(), ".md"), "-", " "))
+		}
 		page := Page{
 			Title:   title,
 			Content: template.HTML(content.String()),
@@ -174,7 +183,7 @@ func generate() {
 	}
 	defer destFile.Close()
 
-	title := "Home"
+	title := "Reyel Blog"
 	page := IndexPage{
 		Title: title,
 		Posts: posts,

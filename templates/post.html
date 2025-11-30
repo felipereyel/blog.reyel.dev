@@ -3,11 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
+    <title>Reyel Blog | {{.Title}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: oklch(0.12 0.02 40);
+            --foreground: oklch(0.92 0.01 70);
+            --secondary: oklch(0.55 0.15 150);
+            --border: oklch(0.25 0.02 40);
+            --muted-foreground: oklch(0.65 0.02 60);
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--foreground);
+            font-family: 'Crimson Text', Georgia, serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header, footer {
+            padding: 1rem 1.5rem;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        .container {
+            margin: 0 auto;
+            max-width: 42rem;
+        }
+
+        header, footer {
+            border-color: var(--border);
+        }
+
+        header {
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+        }
+
+        footer {
+            border-top-width: 1px;
+            border-top-style: solid;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+        }
+
+        h1 {
+            font-size: 3.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+            font-family: 'Crimson Text', Georgia, serif;
+        }
+
+        .prose p {
+            line-height: 1.75;
+        }
+
+        .prose a {
+            color: var(--secondary);
+        }
+
+        .footer-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .footer-block h3 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-block a {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            text-decoration: none;
+            transition: color 200ms;
+        }
+
+        .footer-block a:hover {
+            color: var(--foreground);
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        {{.Content}}
-    </div>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a href="/" style="text-decoration: none; color: var(--foreground);"><h1>Reyel Blog</h1></a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Blog Post -->
+            <section>
+                <div class="prose">
+                {{.Content}}
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-block">
+                    <h3>Connect</h3>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="https://github.com/felipereyel" target="_blank" rel="noopener noreferrer">
+                            GitHub
+                        </a>
+                        <a href="https://www.linkedin.com/in/felipereyel/" target="_blank" rel="noopener noreferrer">
+                            LinkedIn
+                        </a>
+                        <a href="mailto:me@reyel.dev">
+                            Email
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-block">
+                    <h3>Link</h3>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="/about.html" rel="noopener noreferrer">
+                            About
+                        </a>
+                        <a href="https://github.com/felipereyel/blog.reyel.dev" target="_blank" rel="noopener noreferrer">
+                            View Source
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

@@ -1,25 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
+    <title>Reyel Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: oklch(0.12 0.02 40);
+            --foreground: oklch(0.92 0.01 70);
+            --secondary: oklch(0.55 0.15 150);
+            --border: oklch(0.25 0.02 40);
+            --muted-foreground: oklch(0.65 0.02 60);
+        }
+
+        * {
+            @apply border-[color:var(--border)];
+        }
+
+        html, body {
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+
+        h1, h2 {
+            font-family: 'Crimson Text', Georgia, serif;
+        }
+
+        .font-mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        .text-secondary {
+            color: var(--secondary);
+        }
+
+        .text-muted {
+            color: var(--muted-foreground);
+        }
+
+        .hover-green:hover h2 {
+            color: var(--secondary);
+            transition: color 200ms;
+        }
+
+        .border-b {
+            border-bottom-color: var(--border);
+        }
+
+        .border-t {
+            border-top-color: var(--border);
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <main>
-            <h1>Reyel Blog</h1>
-            <p>Welcome to my blog!</p>
-            <p>This is the homepage.</p>
-        </main>
-        <aside>
-            <h2>Posts</h2>
-            <ul>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="border-b">
+        <div class="mx-auto max-w-2xl px-6 py-12 sm:px-8 sm:py-16">
+            <h1 class="mb-2 text-5xl sm:text-6xl font-bold tracking-tight">Reyel Blog</h1>
+            <p class="mb-6 text-xl text-muted">
+                A collection of thoughts on design, web development, and digital creativity
+            </p>
+            <p class="max-w-lg text-base leading-relaxed text-muted">
+                Welcome to my digital archive. Here you'll find essays and reflections on minimalism, retro aesthetics, and the craft of building beautiful web experiences.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mx-auto max-w-2xl px-6 sm:px-8">
+        <!-- Blog Posts -->
+        <section class="py-12 sm:py-16">
+            <div class="space-y-8">
                 {{range .Posts}}
-                <li><a href="{{.Link}}">{{.Date.Format "2006-01-02"}} - {{.Title}}</a></li>
+                <article class="group border-b pb-8 transition-all duration-300 hover:opacity-70">
+                    <a href="{{.Link}}" class="hover-green">
+                        <h2 class="mb-3 text-3xl sm:text-4xl font-bold tracking-tight">{{.Title}}</h2>
+                    </a>
+                    <div class="flex items-center justify-between">
+                        <time class="text-sm text-muted">{{.Date.Format "2006-01-02"}}</time>
+                        <a href="{{.Link}}" class="font-mono text-xs font-bold uppercase tracking-widest transition-all duration-200 hover:translate-x-1">
+                            Read →
+                        </a>
+                    </div>
+                </article>
                 {{end}}
-            </ul>
-        </aside>
-    </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t">
+        <div class="mx-auto max-w-2xl px-6 py-12 sm:px-8 sm:py-16">
+            <div class="mb-8 grid gap-6 sm:grid-cols-2">
+                <div>
+                    <h3 class="mb-3 text-sm font-bold uppercase tracking-widest">About</h3>
+                    <p class="text-sm leading-relaxed text-muted">
+                        A passionate developer exploring the intersection of creativity and technology.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="mb-3 text-sm font-bold uppercase tracking-widest">Connect</h3>
+                    <div class="flex gap-6">
+                        <a href="https://github.com/felipereyel" target="_blank" rel="noopener noreferrer" class="text-sm text-muted transition-colors duration-200 hover:text-foreground">
+                            GitHub
+                        </a>
+                        <a href="mailto:me@reyel.dev" class="text-sm text-muted transition-colors duration-200 hover:text-foreground">
+                            Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t pt-8">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-xs text-muted">© 2025 Reyel Blog. All rights reserved.</p>
+                    <a href="https://github.com/felipereyel/blog.reyel.dev" target="_blank" rel="noopener noreferrer" class="text-xs text-muted transition-colors duration-200 hover:text-foreground">
+                        View Source →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
