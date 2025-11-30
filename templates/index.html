@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reyel Blog</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,110 +14,175 @@
             --muted-foreground: oklch(0.65 0.02 60);
         }
 
-        * {
-            @apply border-[color:var(--border)];
-        }
-
-        html, body {
+        body {
             background-color: var(--background);
             color: var(--foreground);
+            font-family: 'Crimson Text', Georgia, serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        h1, h2 {
+        header, footer, main {
+            padding: 1rem 1.5rem;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        .container {
+            margin: 0 auto;
+            max-width: 42rem;
+        }
+
+        header, footer {
+            border-color: var(--border);
+        }
+
+        header {
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+        }
+
+        footer {
+            border-top-width: 1px;
+            border-top-style: solid;
+        }
+
+        h1 {
+            font-size: 3.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
             font-family: 'Crimson Text', Georgia, serif;
         }
 
-        .font-mono {
-            font-family: 'Space Mono', monospace;
+        .prose p {
+            line-height: 1.75;
         }
 
-        .text-secondary {
+        .prose a {
+            color: var(--foreground);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .prose a:hover {
             color: var(--secondary);
         }
 
-        .text-muted {
+        .prose article {
+            margin-bottom: 2rem; /* Gap between posts */
+            padding-bottom: 2rem; /* Space for the border */
+            border-bottom: 1px solid var(--border); /* Separator line */
+        }
+
+        .prose article:last-of-type {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none; /* No border for the last post */
+        }
+
+        .footer-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .footer-block h3 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-block a {
+            font-size: 0.875rem;
             color: var(--muted-foreground);
-        }
-
-        .hover-green:hover h2 {
-            color: var(--secondary);
+            text-decoration: none;
             transition: color 200ms;
         }
 
-        .border-b {
-            border-bottom-color: var(--border);
-        }
-
-        .border-t {
-            border-top-color: var(--border);
+        .footer-block a:hover {
+            color: var(--foreground);
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
     <!-- Header -->
-    <header class="border-b">
-        <div class="mx-auto max-w-2xl px-6 py-12 sm:px-8 sm:py-16">
-            <h1 class="mb-2 text-5xl sm:text-6xl font-bold tracking-tight">Reyel Blog</h1>
-            <p class="mb-6 text-xl text-muted">
-                A collection of thoughts on design, web development, and digital creativity
-            </p>
-            <p class="max-w-lg text-base leading-relaxed text-muted">
-                Welcome to my digital archive. Here you'll find essays and reflections on minimalism, retro aesthetics, and the craft of building beautiful web experiences.
-            </p>
+    <header>
+        <div class="container">
+            <div>
+                <h1>Reyel Blog</h1>
+                <p>
+                    Welcome to my digital archive. Here you'll find essays and reflections on minimalism, retro aesthetics, and the craft of building beautiful web experiences.
+                </p>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="mx-auto max-w-2xl px-6 sm:px-8">
-        <!-- Blog Posts -->
-        <section class="py-12 sm:py-16">
-            <div class="space-y-8">
+    <main>
+        <div class="container">
+            <!-- Blog Post -->
+            <section>
+                <div class="prose">
                 {{range .Posts}}
-                <article class="group border-b pb-8 transition-all duration-300 hover:opacity-70">
-                    <a href="{{.Link}}" class="hover-green">
-                        <h2 class="mb-3 text-3xl sm:text-4xl font-bold tracking-tight">{{.Title}}</h2>
+                <article>
+                    <a href="{{.Link}}">
+                        <h2 >{{.Title}}</h2>
                     </a>
-                    <div class="flex items-center justify-between">
-                        <time class="text-sm text-muted">{{.Date.Format "2006-01-02"}}</time>
-                        <a href="{{.Link}}" class="font-mono text-xs font-bold uppercase tracking-widest transition-all duration-200 hover:translate-x-1">
-                            Read →
-                        </a>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <time>{{.Date.Format "2006-01-02"}}</time>
+                        <a href="{{.Link}}">Read →</a>
                     </div>
                 </article>
                 {{end}}
-            </div>
-        </section>
+                </div>
+            </section>
+        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t">
-        <div class="mx-auto max-w-2xl px-6 py-12 sm:px-8 sm:py-16">
-            <div class="mb-8 grid gap-6 sm:grid-cols-2">
-                <div>
-                    <h3 class="mb-3 text-sm font-bold uppercase tracking-widest">About</h3>
-                    <p class="text-sm leading-relaxed text-muted">
-                        A passionate developer exploring the intersection of creativity and technology.
-                    </p>
-                </div>
-                <div>
-                    <h3 class="mb-3 text-sm font-bold uppercase tracking-widest">Connect</h3>
-                    <div class="flex gap-6">
-                        <a href="https://github.com/felipereyel" target="_blank" rel="noopener noreferrer" class="text-sm text-muted transition-colors duration-200 hover:text-foreground">
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-block">
+                    <h3>Connect</h3>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="https://github.com/felipereyel" target="_blank" rel="noopener noreferrer">
                             GitHub
                         </a>
-                        <a href="mailto:me@reyel.dev" class="text-sm text-muted transition-colors duration-200 hover:text-foreground">
+                        <a href="https://www.linkedin.com/in/felipereyel/" target="_blank" rel="noopener noreferrer">
+                            LinkedIn
+                        </a>
+                        <a href="mailto:me@reyel.dev">
                             Email
                         </a>
                     </div>
                 </div>
-            </div>
-
-            <div class="border-t pt-8">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p class="text-xs text-muted">© 2025 Reyel Blog. All rights reserved.</p>
-                    <a href="https://github.com/felipereyel/blog.reyel.dev" target="_blank" rel="noopener noreferrer" class="text-xs text-muted transition-colors duration-200 hover:text-foreground">
-                        View Source →
-                    </a>
+                <div class="footer-block">
+                    <h3>Link</h3>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="/about.html" rel="noopener noreferrer">
+                            About
+                        </a>
+                        <a href="https://github.com/felipereyel/blog.reyel.dev" target="_blank" rel="noopener noreferrer">
+                            View Source
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
